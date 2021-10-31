@@ -8,10 +8,36 @@ Apple's iOS 15.0.2 allows the health file to be exported. (See below for instruc
 ## Health File Preparation
 These instructions are correct at 10/27/2010 with iOS 15.0.2.
 
+### File structure
+These notebooks assume the following folder structure inside your project folder:
+
+```
+Your Project Folder
+    Data
+        Raw
+        Processed
+    Notebooks
+    Reports
+```
 ### Phone Export
-Open the Health app on the iPhone. Touch the profile picture on the top-right corner. Touch Export All Health Data at the bottom of the next screen. You will be presented with several options to share the resulting zip file. Save the file to Documents / Coding / Apple Medical / Pandas / Data / Raw
+- Open the Health app on the iPhone. 
+-Touch the profile picture on the top-right corner. 
+- Touch Export All Health Data at the bottom of the next screen.
+- You will be presented with several options to export the file. 
+- Save the file to a convenient location where you can 
+unzip it and organize the files which will be produced.
+
 
 ### Prepare for import
-On your desktop, unzip the attached archive. Change zip file name to export_YYYY_MM_DD. Change the export.xml file name to export_YYYY_MM_DD.xml and move it to the Raw directory. Discard the unzipped folder and its contents.
+- Change the name of the exported file 
+from `export.zip` to `export_YYYY_MM_DD.zip`.
+This will distinguish between future exports.
+- Unzip the export.zip file. 
+This will produce a folder called `apple_health_export`.
+Inside the folder is a file called `export.xml`. 
+- Change the name to export_YYYY_MM_DD.xml
+- Move export_YYYY_MM_DD.xml to ` <Your Project Folder> / Data / Raw`.
+- The `apple_health_export` has no further value for this procedure and may be trashed.
+- Open the notebook, 'Import Phone Data and Preprocess Heart Dataset' and change the import_file_date to YYYY_MM_DD.
 
-Open the notebook, 'Import Phone Data and Preprocess Heart Dataset' and change the import_file_date to YYYY_MM_DD.
+Run the notebook to process the file and produce a pickled python file.

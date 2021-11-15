@@ -1,5 +1,6 @@
-pandas
-lxml
-matplotlib
-seaborn
 jupyter
+lxml
+numpy
+pandas
+matplotlib==3.5.0rc1
+seaborn

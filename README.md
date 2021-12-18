@@ -1,12 +1,14 @@
-# Plotting Heart Data from an Apple Watch
+# Plotting Heart Data from an Apple Watch and iPhone
 
-Plot blood pressure and heart rate recorded on an Apple Watch using pandas, matplotlib and seaborn.
+
+Plot blood pressure and heart rate using pandas, matplotlib and seaborn. 
+
 
 ### WARNING
 Apple's iOS 15.0.2 allows the health file to be exported. (See below for instructions) As far as I know there is no formal API for the file. In the absence of an API Apple are under no obligation to keep the file format constant nor give any warning of changes. In other words everything here may stop working.
 
 ## Health File Preparation
-The following instructions are correct at 10/27/2021 with iOS 15.0.2.
+The following instructions are correct at 12/18/2021 with iOS 15.2 and Watch OS 8.3.
 
 ### File structure
 These notebooks assume the following folder structure inside your project folder:

@@ -38,3 +38,19 @@ Your Project Folder
 - Open the notebook, 'Import Phone Data and Preprocess Heart Dataset' and change the import_file_date to YYYY_MM_DD.
 
 Run the notebook to process the file and produce a pickled python file. For me this reduced a half gigabyte xml file to a 5Mb python pickle file. It takes a while.
+
+### Boxenplots
+
+The large datasets require a better visualization than that provided by boxplots so seaborn's boxenplots have been used.
+
+Explanations of boxenplots (also known as letter plots): <br />
+[towards data science](https://towardsdatascience.com/letter-value-plot-the-easy-to-understand-boxplot-for-large-datasets-12d6c1279c97) <br />
+[stackoverflow.com](https://stackoverflow.com/questions/52403381/how-boxen-plot-is-different-from-box-plot) <br />
+[Original paper](https://vita.had.co.nz/papers/letter-value-plot.html) <br />
+[seaborn.docs](https://seaborn.pydata.org/generated/seaborn.boxenplot.html) <br />
+
+#### Boxenplot stopping criterion
+A stopping criterion is used to determine the last letter-value k for which a box should be visualized. For every 
+letter-value, the trustworthiness is determined by calculating the 95% confidence interval around it. If the interval overlaps with the previous letter-value, the uncertainty for the current letter-value is too high. In this case, the letter-value and the following values are not displayed anymore.
+In seaborn other algorithms are available for stopping criteria.
+

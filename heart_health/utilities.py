@@ -2,7 +2,7 @@
 
 # ##################################################################################################
 #  Copyright ©2021. Stephen Rigden.                                                                #
-#  Last modified 12/25/21, 11:30 AM by stephen.                                                    #
+#  Last modified 12/31/21, 9:06 AM by stephen.                                                     #
 #  This program is free software: you can redistribute it and/or modify                            #
 #  it under the terms of the GNU General Public License as published by                            #
 #  the Free Software Foundation, either version 3 of the License, or                               #
@@ -16,9 +16,15 @@
 # ##################################################################################################
 
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 import pandas
+
+
+PRESSURE_SYSTOLIC = 'HKQuantityTypeIdentifierBloodPressureSystolic'
+PRESSURE_DIASTOLIC = 'HKQuantityTypeIdentifierBloodPressureDiastolic'
+TOLICS = Literal[PRESSURE_SYSTOLIC: str, PRESSURE_DIASTOLIC: str]
+TOLIC_COL = Literal['systolic', 'diastolic']
 
 
 @dataclass
@@ -118,3 +124,67 @@ class TimeCategories:
         category_timedelta = pandas.Timedelta(days=category_day_delta)
         category = self.end_date - category_timedelta
         return category
+
+
+def create_blood_pressure_dataset(ds: pandas.DataFrame) -> pandas.DataFrame:
+    """
+    Convert a generic 'flat' health dataset into a blood pressure dataset.
+    
+    Input dataset:
+    
+    Data columns (total 3 columns):
+        <class 'pandas.core.frame.DataFrame'>
+         #   Column  Dtype
+        ---  ------  -----
+         0   value   int64
+         1   type    object
+         2   date    datetime64[ns]
+         
+    Args:
+        ds: The dataset
+
+    Returns:
+        The blood pressure dataset:
+        
+        <class 'pandas.core.frame.DataFrame'>
+         #   Column          Dtype
+        ---  ------          -----
+         0   date            datetime64[ns]
+         1   systolic        int64
+         2   diastolic       int64
+         3   pulse pressure  int64
+    
+    """
+    ds_sys = _create_stolic_dataset(ds, PRESSURE_SYSTOLIC, 'systolic')
+    ds_dia = _create_stolic_dataset(ds, PRESSURE_DIASTOLIC, 'diastolic')
+    bpds = ds_sys.merge(ds_dia, left_on=['date'], right_on=['date'])
+    bpds['pulse pressure'] = bpds['systolic'] - bpds['diastolic']
+    return bpds
+
+
+def _create_stolic_dataset(ds: pandas.DataFrame, health_type: TOLICS, col_name: TOLIC_COL) -> pandas.DataFrame:
+    """
+    Convert a generic 'flat' health dataset into a systolic or diastolic dataset.
+
+    Args:
+        ds: The dataset
+        health_type: An Apple constant used to differentiate types of health records.
+        col_name: Name of the new column
+
+    Returns:
+        The stolic dataset:
+        
+            <class 'pandas.core.frame.DataFrame'>
+             #   Column     Dtype
+            ---  ------     -----
+             0   date       datetime64[ns]
+             1   <col_name> int64
+             
+    """
+    wanted = ds['type'] == health_type
+    sto_ds = ds.loc[wanted, ['date', 'value']]
+    if len(sto_ds) is 0:
+        msg = f"Type '{health_type}' was not found in the dataset."
+        raise ValueError(msg)
+    sto_ds = sto_ds.rename(columns={'value': col_name})
+    return sto_ds

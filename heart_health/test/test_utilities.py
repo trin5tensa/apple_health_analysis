@@ -2,7 +2,7 @@
 
 # ##################################################################################################
 #  Copyright ©2021. Stephen Rigden.                                                                #
-#  Last modified 12/25/21, 11:30 AM by stephen.                                                    #
+#  Last modified 12/31/21, 9:06 AM by stephen.                                                     #
 #  This program is free software: you can redistribute it and/or modify                            #
 #  it under the terms of the GNU General Public License as published by                            #
 #  the Free Software Foundation, either version 3 of the License, or                               #
@@ -14,8 +14,9 @@
 #  You should have received a copy of the GNU General Public License                               #
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.                           #
 # ##################################################################################################
-
+import datetime
 from contextlib import contextmanager
+
 import pytest
 import utilities
 
@@ -122,3 +123,60 @@ class TestTimeCategory:
         categories = utilities.TimeCategories(start, end)
         assert categories.category_size == 2
 
+
+class TestCreateBloodPressureDataset:
+    @contextmanager
+    def dummy_heart_dataset(self):
+        """
+        Returns:
+               value                                            type       date
+            0     80  HKQuantityTypeIdentifierBloodPressureDiastolic 2022-01-01
+            1    120   HKQuantityTypeIdentifierBloodPressureSystolic 2022-01-01
+            2     90  HKQuantityTypeIdentifierBloodPressureDiastolic 2022-01-02
+            3    142   HKQuantityTypeIdentifierBloodPressureSystolic 2022-01-02
+        """
+        date_1 = datetime.datetime(2022, 1, 1)
+        date_2 = datetime.datetime(2022, 1, 2)
+        dates = utilities.pandas.to_datetime([date_1, date_1, date_2, date_2])
+        types = utilities.pandas.Series(
+                ['HKQuantityTypeIdentifierBloodPressureDiastolic',
+                 'HKQuantityTypeIdentifierBloodPressureSystolic',
+                 'HKQuantityTypeIdentifierBloodPressureDiastolic',
+                 'HKQuantityTypeIdentifierBloodPressureSystolic'])
+        values = utilities.pandas.Series([80, 120, 90, 142])
+        yield utilities.pandas.DataFrame({'value': values, 'type': types, 'date': dates})
+    
+    def test_correct_conversion_to_blood_pressure_dataset(self):
+        with self.dummy_heart_dataset() as bpds:
+            # Create the expected return dataset
+            #         date  systolic  diastolic  pulse pressure
+            # 0 2022-01-01       120         80              40
+            # 1 2022-01-02       142         90              52
+            date_1 = datetime.datetime(2022, 1, 1)
+            date_2 = datetime.datetime(2022, 1, 2)
+            dates = utilities.pandas.to_datetime([date_1, date_2])
+            systolics = utilities.pandas.Series([120, 142])
+            diastolics = utilities.pandas.Series([80, 90])
+            pulse_pressures = utilities.pandas.Series([40, 52])
+            expected = utilities.pandas.DataFrame({'date': dates, 'systolic': systolics,
+                                                   'diastolic': diastolics, 'pulse pressure': pulse_pressures})
+ 
+            assert utilities.create_blood_pressure_dataset(bpds).compare(expected).empty
+        
+    def test_missing_systolic_data_raises_value_error(self):
+        with self.dummy_heart_dataset() as bpds:
+            bpds.type[1] = 'garbage'
+            bpds.type[3] = 'garbage'
+            expected = "Type 'HKQuantityTypeIdentifierBloodPressureSystolic' was not found in the dataset."
+            with pytest.raises(ValueError) as cm:
+                utilities.create_blood_pressure_dataset(bpds)
+            assert str(cm.value) == expected
+        
+    def test_missing_diastolic_data_raises_value_error(self):
+        with self.dummy_heart_dataset() as bpds:
+            bpds.type[0] = 'garbage'
+            bpds.type[2] = 'garbage'
+            expected = "Type 'HKQuantityTypeIdentifierBloodPressureDiastolic' was not found in the dataset."
+            with pytest.raises(ValueError) as cm:
+                utilities.create_blood_pressure_dataset(bpds)
+            assert str(cm.value) == expected

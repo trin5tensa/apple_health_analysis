@@ -3,6 +3,13 @@
 
 Plot blood pressure and heart rate using pandas, matplotlib and seaborn. 
 
+#### Heart rate
+If you have an Apple Watch connected to your phone heart rate is measured automatically by the watch and added to 
+Apple health records on the phone. 
+
+#### Blood pressure
+You will need to take your blood pressure using a manually operated pressure cuff and enter into the health app. Apple do have a patent on a watch band that can measure blood pressure so it may become automatic one day.
+
 
 ### WARNING
 Apple's iOS 15.0.2 allows the health file to be exported. (See below for instructions) As far as I know there is no formal API for the file. In the absence of an API Apple are under no obligation to keep the file format constant nor give any warning of changes. In other words everything here may stop working.
@@ -26,31 +33,29 @@ Your Project Folder
 - Touch the profile picture on the top-right corner. 
 - Touch Export All Health Data at the bottom of the next screen.
 - You will be presented with several options to export the file. 
-- Save the file to a convenient location where you can unzip it and organize the files which will be produced.
+- Save the file to a convenient location where you can unzip it.
 
 
 ### Prepare for import
-- Change the name of the exported file from `export.zip` to `export_YYYY_MM_DD.zip`. This will distinguish between future exports.
 - Unzip the export.zip file. This will produce a folder called `apple_health_export`. Inside the folder is a file called `export.xml`. 
-- Change the name to export_YYYY_MM_DD.xml
-- Move export_YYYY_MM_DD.xml to ` <Your Project Folder> / Data / Raw`.
+- Move export.xml to ` <Your Project Folder> / Data / Raw`.
 - The `apple_health_export` folder has no further value for this procedure and may be trashed.
 - Open the notebook, 'Import Phone Data and Preprocess Heart Dataset' and change the import_file_date to YYYY_MM_DD.
 
-Run the notebook to process the file and produce a pickled python file. For me this reduced a half gigabyte xml file to a 5Mb python pickle file. It takes a while.
+Run the Import Phone Data and Preprocess Heart Dataset.ipynb notebook to process the file and produce a pickled 
+python file. For me this reduced a half gigabyte xml file to a 5Mb python pickle file. It takes a while.
 
-### Boxenplots
+Next run the Heart Rate Boxenplot.ipynb and Blood Pressure Boxenplot.ipynb notebooks to visualize those datasets. The 
+plots will also be saved to the Reports folder as jpg and pdf files.
 
-The large datasets require a better visualization than that provided by boxplots so seaborn's boxenplots have been used.
+### Boxenplots (also known as letter plots)
 
-Explanations of boxenplots (also known as letter plots): <br />
+These notebooks produce boxenplots because of the very large datasets. These show the percentiles 50%, 25% and 75%, 12.
+5% and 87.5%, 6.25% and 93.75%, and so on until the visualization becomes too small to be meaningful.
+
+Resources on boxenplots from easy to detailed: <br />
+[stackoverflow.com: how-boxen-plot-is-different-from-box-plot](https://stackoverflow.com/questions/52403381/how-boxen-plot-is-different-from-box-plot/65894078#65894078) <br />
 [towards data science](https://towardsdatascience.com/letter-value-plot-the-easy-to-understand-boxplot-for-large-datasets-12d6c1279c97) <br />
-[stackoverflow.com](https://stackoverflow.com/questions/52403381/how-boxen-plot-is-different-from-box-plot) <br />
 [Original paper](https://vita.had.co.nz/papers/letter-value-plot.html) <br />
 [seaborn.docs](https://seaborn.pydata.org/generated/seaborn.boxenplot.html) <br />
-
-#### Boxenplot stopping criterion
-A stopping criterion is used to determine the last letter-value k for which a box should be visualized. For every 
-letter-value, the trustworthiness is determined by calculating the 95% confidence interval around it. If the interval overlaps with the previous letter-value, the uncertainty for the current letter-value is too high. In this case, the letter-value and the following values are not displayed anymore.
-In seaborn other algorithms are available for stopping criteria.
 

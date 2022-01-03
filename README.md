@@ -10,6 +10,10 @@ Apple health records on the phone.
 #### Blood pressure
 You will need to take your blood pressure using a manually operated pressure cuff and enter into the health app. Apple do have a patent on a watch band that can measure blood pressure so it may become automatic one day.
 
+#### UTC - In case it matters.
+If you see data for a day when you know for sure no data was entered read on. Apple stores times as UTC ± local 
+difference so 11 p.m New York on December 25th ends up looking something like "2020-12-26 04:00:00 -05:00:00'. For 
+the sake of simplicity local times are ignored and datestamps always show UTC - in this case "2020-12-26 04:00:00".
 
 ### WARNING
 Apple's iOS 15.0.2 allows the health file to be exported. (See below for instructions) As far as I know there is no formal API for the file. In the absence of an API Apple are under no obligation to keep the file format constant nor give any warning of changes. In other words everything here may stop working.

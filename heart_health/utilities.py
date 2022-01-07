@@ -1,8 +1,8 @@
 """Utility functions to support Apple Medical notebooks."""
 
 # ##################################################################################################
-#  Copyright ©2021. Stephen Rigden.                                                                #
-#  Last modified 12/31/21, 9:06 AM by stephen.                                                     #
+#  Copyright ©2022. Stephen Rigden.                                                                #
+#  Last modified 1/7/22, 8:15 AM by stephen.                                                       #
 #  This program is free software: you can redistribute it and/or modify                            #
 #  it under the terms of the GNU General Public License as published by                            #
 #  the Free Software Foundation, either version 3 of the License, or                               #
@@ -15,8 +15,8 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.                           #
 # ##################################################################################################
 
-from dataclasses import dataclass
-from typing import Literal, Optional, Union
+from dataclasses import dataclass, field
+from typing import ClassVar, Literal, Optional, Union
 
 import pandas
 
@@ -31,47 +31,70 @@ TOLIC_COL = Literal['systolic', 'diastolic']
 class TimeCategories:
     """
     Support the conversion of matplotlib date ranges into matplotlib categories. The categories are
-    represented by 'buckets' of date sequences. They are identified by the last date in each category.
+    represented by 'bins' of date sequences. Bins are identified by the last date.
     
-    The categories are aligned with the end_date. Since this could lead to the first category containing less
-    than the full number of days defined by 'category_size' the 'start_date' will be normalized to the
-    beginning of the first complete category.
-    For example, with start date = 2021-12-10, end_date = 2021-12-15, category_size = 4 the start date
+    The bins are aligned with the end_date. Since this could lead to the first bin containing less
+    than the full number of days defined by 'bin_size' the 'start_date' will be normalized to the
+    beginning of the first complete bin.
+    For example, with start date = 2021-12-10, end_date = 2021-12-15, bin_size = 4 the start date
     will be normalized to 2021-12-12.
-    Also with start date = 2021-12-10, end_date = 2021-12-15, category_size = 6 the start date
+    Also with start date = 2021-12-10, end_date = 2021-12-15, bin_size = 6 the start date
     will be unchanged at 2121-12-10.
+    
+    Args
+        start_date: Inclusive start date of range.
+        end_date: Inclusive end date of range.
+        bin_size: The size of the bin in days.
+            If specified then bin_count must not be. If neither bin_size nor bin_count are supplied the bin_count
+            will default to 10 bins.
+        bin_count: The number of bins.
+            If specified then bin_size must not be. If neither bin_size nor bin_count are supplied the bin_count
+            will default to 10 bins.
+
+    Raises
+        ValueError:
+            If both the bin_count and bin_size were supplied.
+            If the end_date precedes the start_date.
+            If the bin_size cannot be contained within the start_date and the end_date.
 
     Example usage within matplotlib or seaborn:
         # Create a TimeCategories object
         start = pandas.Timestamp(2021, 11, 26)
         end = pandas.Timestamp(2021, 12, 5)
-        category_size = 3
-        time_categories = TimeCategories(start, end, category_size)
+        bin_size = 3
+        time_categories = TimeCategories(start, end, bin_size=bin_size)
         
         # Create a new column 'category'
-        df['category'] = df['date'].apply(time_categories.get_category)
+        dataset['category'] = dataset['date'].apply(time_categories.get_category)
     """
     start_date:  pandas.Timestamp
     end_date:  pandas.Timestamp
     
-    # Category size in days. The default category size is calculated to provide ten time categories.
-    category_size: int = None
+    bin_size: int = field(default=None, kw_only=True)
+    bin_count: int = field(default=None, kw_only=True)
+    bin_count_default: ClassVar = field(default=10, init=False, repr=False)
     
     def __post_init__(self):
+        if self.bin_count and self.bin_size:
+            msg = f'Supply either bin_size ({self.bin_size}) or bin_count ({self.bin_count}) but not both.'
+            raise ValueError(msg)
+
         if self.end_date < self.start_date:
             msg = f'The start date {self.start_date} must precede the end date {self.end_date}.'
             raise ValueError(msg)
 
+        if not self.bin_size and not self.bin_count:
+            self.bin_count = self.bin_count_default
+            
         one_day = pandas.Timedelta('1 day')
-        if not self.category_size:
-            # Calculate a category size which will create ten categories
+        if self.bin_count:
             period_of_interest = self.end_date - self.start_date + one_day
-            self.category_size = int(str(period_of_interest.days)) // 10
+            self.bin_size = int(str(period_of_interest.days)) // self.bin_count
 
         # Is the category too large to fit into the date range?
         date_range = (self.end_date - self.start_date).days + 1
-        if self.category_size > date_range:
-            msg = (f"The category_size of {self.category_size} days must be less than the time span between the "
+        if self.bin_size > date_range:
+            msg = (f"The bin_size of {self.bin_size} days must be less than the time span between the "
                    f"start and end dates ({date_range} days).")
             raise ValueError(msg)
         
@@ -120,7 +143,7 @@ class TimeCategories:
             The last day of the date's time category
         """
         days_to_end_date = (self.end_date - date).days
-        category_day_delta = days_to_end_date // self.category_size * self.category_size
+        category_day_delta = days_to_end_date // self.bin_size * self.bin_size
         category_timedelta = pandas.Timedelta(days=category_day_delta)
         category = self.end_date - category_timedelta
         return category

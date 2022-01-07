@@ -1,8 +1,8 @@
 """Test module."""
 
 # ##################################################################################################
-#  Copyright ©2021. Stephen Rigden.                                                                #
-#  Last modified 12/31/21, 9:06 AM by stephen.                                                     #
+#  Copyright ©2022. Stephen Rigden.                                                                #
+#  Last modified 1/7/22, 8:15 AM by stephen.                                                       #
 #  This program is free software: you can redistribute it and/or modify                            #
 #  it under the terms of the GNU General Public License as published by                            #
 #  the Free Software Foundation, either version 3 of the License, or                               #
@@ -27,7 +27,16 @@ class TestTimeCategory:
         start = utilities.pandas.Timestamp(2021, 11, 26)
         end = utilities.pandas.Timestamp(2021, 12, 5)
         category_size = 3
-        time_categories = utilities.TimeCategories(start, end, category_size)
+        time_categories = utilities.TimeCategories(start, end, bin_size=category_size)
+        yield time_categories
+        
+    @contextmanager
+    def twelve_day_context(self, bin_count: int):
+        one_day = utilities.pandas.Timedelta('1 day')
+        length = utilities.pandas.Timedelta('12 day')
+        start = utilities.pandas.Timestamp(2022, 1, 1)
+        end = start + length - one_day
+        time_categories = utilities.TimeCategories(start, end, bin_count=bin_count)
         yield time_categories
         
     def test_too_large_date_returns_none(self):
@@ -44,7 +53,7 @@ class TestTimeCategory:
         start = utilities.pandas.Timestamp(2021, 12, 10)
         end = utilities.pandas.Timestamp(2021, 12, 15)
         category_size = 4
-        time_categories = utilities.TimeCategories(start, end, category_size)
+        time_categories = utilities.TimeCategories(start, end, bin_size=category_size)
         date = 2021, 12, 10
         assert time_categories.get_category(date) is None
 
@@ -52,7 +61,7 @@ class TestTimeCategory:
         start = utilities.pandas.Timestamp(2021, 12, 10)
         end = utilities.pandas.Timestamp(2021, 12, 15)
         category_size = 6
-        time_categories = utilities.TimeCategories(start, end, category_size)
+        time_categories = utilities.TimeCategories(start, end, bin_size=category_size)
         date = 2021, 12, 10
         assert time_categories.get_category(date) == '2021-12-15'
         
@@ -93,7 +102,7 @@ class TestTimeCategory:
         
         expected = f'The start date {start} must precede the end date {end}.'
         with pytest.raises(ValueError) as cm:
-            utilities.TimeCategories(start, end, category_size)
+            utilities.TimeCategories(start, end, bin_size=category_size)
         assert str(cm.value) == expected
        
     def test_invalid_category_size_raises_value_error(self):
@@ -101,10 +110,10 @@ class TestTimeCategory:
         end = utilities.pandas.Timestamp(2021, 11, 10)
         category_size = 42
         
-        expected = (f"The category_size of 42 days must be less than the time span between "
+        expected = (f"The bin_size of 42 days must be less than the time span between "
                     f"the start and end dates (3 days).")
         with pytest.raises(ValueError) as cm:
-            utilities.TimeCategories(start, end, category_size)
+            utilities.TimeCategories(start, end, bin_size=category_size)
         assert str(cm.value) == expected
       
     def test_invalid_date_type_raises_type_error(self):
@@ -121,9 +130,32 @@ class TestTimeCategory:
         end = utilities.pandas.Timestamp(2021, 11, 20)
     
         categories = utilities.TimeCategories(start, end)
-        assert categories.category_size == 2
+        assert categories.bin_size == 2
 
+    def test_both_bin_size_and_count_raise_value_error(self):
+        start = utilities.pandas.Timestamp(2021, 11, 8)
+        end = utilities.pandas.Timestamp(2021, 12, 7)
+        bin_size = 1
+        bin_count = 1
+    
+        expected = f'Supply either bin_size (1) or bin_count (1) but not both.'
+        with pytest.raises(ValueError) as cm:
+            utilities.TimeCategories(start, end, bin_size=bin_size, bin_count=bin_count)
+        assert str(cm.value) == expected
 
+    def test_one_bin(self):
+        with self.twelve_day_context(bin_count=1) as time_categories:
+            assert time_categories.bin_size == 12
+            
+    def test_three_bins(self):
+        with self.twelve_day_context(bin_count=3) as time_categories:
+            assert time_categories.bin_size == 4
+            
+    def test_twelve_bins(self):
+        with self.twelve_day_context(bin_count=12) as time_categories:
+            assert time_categories.bin_size == 1
+            
+            
 class TestCreateBloodPressureDataset:
     @contextmanager
     def dummy_heart_dataset(self):

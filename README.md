@@ -1,6 +1,9 @@
 # Plotting Heart Data from an Apple Watch and iPhone
 ## What is this project?
-This project demonstrates the steps needed to get heart data from the iPhone health app and visualize it using pandas, matplotlib and seaborn in jupyter notebooks. A second set of notebooks shows how to merge and visualize external data from a spreadsheet.
+This project demonstrates the steps needed to get heart data from the iPhone health app and visualize it using 
+pandas, matplotlib and seaborn in jupyter notebooks. 
+
+A second set of notebooks shows how to merge external data with the Apple Health data. This facilitates visualizations of the Apple data organized by categories which are not available within the Apple Health data.
 
 It is not a packaged solution. Jupyter notebooks are tools used to explore data. They are not programs with invisible innards that just run and produce output. In any case, the quantity and nature of your input data will be different and you may need or want to use your own choice of [visualizations](https://seaborn.pydata.org/examples/index.html).
 
@@ -56,7 +59,7 @@ This notebook opens the pickled pandas dataset, extracts the blood pressure data
 These notebooks mostly produce boxenplots. These show the percentiles 50%, 25% and 75%, 12. 5% and 87.5%, 6.25% 
 and 93.75%, and so on until the visualization becomes too small to be meaningful.
 
-Here are some helpful resources whihc explain boxenplots running from from easy to detailed: <br />
+Here are some helpful resources which explain boxenplots running from from easy to detailed: <br />
 [stackoverflow.com: how-boxen-plot-is-different-from-box-plot](https://stackoverflow.com/questions/52403381/how-boxen-plot-is-different-from-box-plot/65894078#65894078) <br />
 [towards data science](https://towardsdatascience.com/letter-value-plot-the-easy-to-understand-boxplot-for-large-datasets-12d6c1279c97) <br />
 [seaborn Docs](https://seaborn.pydata.org/generated/seaborn.boxenplot.html) <br />

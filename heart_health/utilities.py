@@ -2,7 +2,7 @@
 
 # ##################################################################################################
 #  Copyright ©2022. Stephen Rigden.                                                                #
-#  Last modified 1/7/22, 8:15 AM by stephen.                                                       #
+#  Last modified 1/11/22, 7:56 AM by stephen.                                                      #
 #  This program is free software: you can redistribute it and/or modify                            #
 #  it under the terms of the GNU General Public License as published by                            #
 #  the Free Software Foundation, either version 3 of the License, or                               #
@@ -185,6 +185,10 @@ def create_blood_pressure_dataset(ds: pandas.DataFrame) -> pandas.DataFrame:
     return bpds
 
 
+class NoDataSupplied(Exception):
+    pass
+
+
 def _create_stolic_dataset(ds: pandas.DataFrame, health_type: TOLICS, col_name: TOLIC_COL) -> pandas.DataFrame:
     """
     Convert a generic 'flat' health dataset into a systolic or diastolic dataset.
@@ -207,7 +211,7 @@ def _create_stolic_dataset(ds: pandas.DataFrame, health_type: TOLICS, col_name: 
     wanted = ds['type'] == health_type
     sto_ds = ds.loc[wanted, ['date', 'value']]
     if len(sto_ds) is 0:
-        msg = f"Type '{health_type}' was not found in the dataset."
-        raise ValueError(msg)
+        msg = f"No records of type '{health_type}' were found in the dataset."
+        raise NoDataSupplied(msg)
     sto_ds = sto_ds.rename(columns={'value': col_name})
     return sto_ds

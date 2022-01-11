@@ -2,7 +2,7 @@
 
 # ##################################################################################################
 #  Copyright ©2022. Stephen Rigden.                                                                #
-#  Last modified 1/7/22, 8:15 AM by stephen.                                                       #
+#  Last modified 1/11/22, 7:56 AM by stephen.                                                      #
 #  This program is free software: you can redistribute it and/or modify                            #
 #  it under the terms of the GNU General Public License as published by                            #
 #  the Free Software Foundation, either version 3 of the License, or                               #
@@ -199,8 +199,9 @@ class TestCreateBloodPressureDataset:
         with self.dummy_heart_dataset() as bpds:
             bpds.type[1] = 'garbage'
             bpds.type[3] = 'garbage'
-            expected = "Type 'HKQuantityTypeIdentifierBloodPressureSystolic' was not found in the dataset."
-            with pytest.raises(ValueError) as cm:
+            expected = ("No records of type 'HKQuantityTypeIdentifierBloodPressureSystolic' were "
+                        "found in the dataset.")
+            with pytest.raises(utilities.NoDataSupplied) as cm:
                 utilities.create_blood_pressure_dataset(bpds)
             assert str(cm.value) == expected
         
@@ -208,7 +209,8 @@ class TestCreateBloodPressureDataset:
         with self.dummy_heart_dataset() as bpds:
             bpds.type[0] = 'garbage'
             bpds.type[2] = 'garbage'
-            expected = "Type 'HKQuantityTypeIdentifierBloodPressureDiastolic' was not found in the dataset."
-            with pytest.raises(ValueError) as cm:
+            expected = ("No records of type 'HKQuantityTypeIdentifierBloodPressureDiastolic' were "
+                        "found in the dataset.")
+            with pytest.raises(utilities.NoDataSupplied) as cm:
                 utilities.create_blood_pressure_dataset(bpds)
             assert str(cm.value) == expected

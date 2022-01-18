@@ -36,30 +36,30 @@ As written the notebooks depend on a folder structure which looks like this:
 - Save the file to a convenient directory where you can unzip it.
 - Unzip the export.zip file. This will produce a folder called `apple_health_export`. Inside the folder is a file called `export.xml`. 
 - Move the export.xml file to ` <<Your Project Folder>> / Data / Raw`.
-- The `apple_health_export` folder has no further value for this procedure and may be deleted.
+- The `apple_health_export` folder has no further use in this procedure and may be deleted.
 
 
-## Visualizing the iPhone Health App
+## Visualizing the iPhone Heart Data
 ### Data Sources
-#### Automatic
 The Apple watch monitors heart rate and records it in the iPhone Apple Health App.
-#### Manual
+
 Blood Pressure must be measured with a pressure cuff and manually entered into the iPhone Apple Health App.
 
 ### The Notebooks
 #### Apple Heart Data Analysis.ipynb
 This notebook opens the `export.xml` file, extracts the heart data, and exports a pickled pandas dataset ready for 
 use by the plotting functions.
-#### Heart Rate Boxenplot.ipynb
-This notebook opens the pickled pandas dataset, extracts the heart rate data, and plots the entire dataset. Three charts are produced: boxplot, boxenplot, and combined boxenplot and observation count.
+#### Heart Rate Plots
+The Heart Rate Boxenplot.ipnb notebook opens the pickled pandas dataset, extracts the heart rate data, and plots the entire dataset. Three charts are produced: boxplot, boxenplot, and combined boxenplot and observation count.
+The Heart Rate Lineplot.ipnb notebook also opens the pickled pandas dataset, extracts the heart rate data, and plots the entire dataset. It produces a lineplot of observation counts on the y axis against heart rate on the x axis.
 #### Blood Pressure Boxenplot.ipynb
 This notebook opens the pickled pandas dataset, extracts the blood pressure data, and plots a combined boxenplot and observation count.
 
-### Boxenplots (also known as letter plots)
-These notebooks mostly produce boxenplots. These show the percentiles 50%, 25% and 75%, 12. 5% and 87.5%, 6.25% 
-and 93.75%, and so on until the visualization becomes too small to be meaningful.
+### A Brief Note on Boxenplots
+Boxenplots show the percentiles 50%, 25% and 75%, 12. 5% and 87.5%, 6.25% 
+and 93.75%, and so on until the visualizations become too small to be meaningful.
 
-Here are some helpful resources which explain boxenplots running from from easy to detailed: <br />
+For further reading: <br />
 [stackoverflow.com: how-boxen-plot-is-different-from-box-plot](https://stackoverflow.com/questions/52403381/how-boxen-plot-is-different-from-box-plot/65894078#65894078) <br />
 [towards data science](https://towardsdatascience.com/letter-value-plot-the-easy-to-understand-boxplot-for-large-datasets-12d6c1279c97) <br />
 [seaborn Docs](https://seaborn.pydata.org/generated/seaborn.boxenplot.html) <br />

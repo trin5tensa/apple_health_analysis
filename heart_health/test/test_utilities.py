@@ -2,7 +2,7 @@
 
 # ##################################################################################################
 #  Copyright ©2022. Stephen Rigden.                                                                #
-#  Last modified 1/11/22, 7:56 AM by stephen.                                                      #
+#  Last modified 1/22/22, 8:57 AM by stephen.                                                      #
 #  This program is free software: you can redistribute it and/or modify                            #
 #  it under the terms of the GNU General Public License as published by                            #
 #  the Free Software Foundation, either version 3 of the License, or                               #
@@ -18,8 +18,7 @@ import datetime
 from contextlib import contextmanager
 
 import pytest
-import utilities
-
+from heart_health import utilities
 
 class TestTimeCategory:
     @contextmanager

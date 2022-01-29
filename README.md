@@ -29,6 +29,10 @@ As written the notebooks depend on a folder structure which looks like this:
 ```
 
 ## Export iPhone Health Data
+> #### *Demo File*
+> *Before you download your own data you may wish to experiment using the dummy `export_dummy.xml`. If so, rename it to `export.xml` and run the notebooks in the order in which they are listed below.*
+
+These instructions are accurate for iOS 15.3 at 1/29/2022.
 - Open the Health app on the iPhone. 
 - Touch the profile picture on the top-right corner. 
 - Touch `Export All Health Data` at the bottom of the next screen.

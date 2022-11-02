@@ -1,4 +1,6 @@
 # Plotting Heart Data from an Apple Watch and iPhone
+#### Currently Unmaintained.
+11/2/2022. This project uses the lxml package which does not run on Python >v3.9.
 ## What is this project?
 This project demonstrates the steps needed to get heart data from the iPhone health app and visualize it using 
 pandas, matplotlib and seaborn in jupyter notebooks. 
